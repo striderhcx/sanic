@@ -33,6 +33,8 @@ from sanic.log import access_logger, logger
 from sanic.request import EXPECT_HEADER, Request, StreamBuffer
 from sanic.response import HTTPResponse
 
+import aiotask_context as aiocontext
+
 
 try:
     import uvloop  # type: ignore
@@ -840,6 +842,9 @@ def serve(
         # create new event_loop after fork
         loop = asyncio.new_event_loop()
         asyncio.set_event_loop(loop)
+
+    # add request_id,see https://github.com/huge-success/sanic/blob/master/examples/log_request_id.py
+    loop.set_task_factory(aiocontext.task_factory)
 
     if app.debug:
         loop.set_debug(app.debug)
